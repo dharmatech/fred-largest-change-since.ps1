@@ -75,9 +75,9 @@ function delta ($table, $a, $b)
 
 # ----------------------------------------------------------------------
 
-$result = get-fred-series 'BOGZ1FL404090430Q'
+# $result = get-fred-series 'BOGZ1FL404090430Q'
 
-$table = delta $result BOGZ1FL404090430Q
+# $table = delta $result BOGZ1FL404090430Q
 
 # ----------------------------------------------------------------------
 
@@ -92,11 +92,11 @@ function reverse
     $arr
 }
 
-$reversed = $table | reverse
+# $reversed = $table | reverse
 
-# $i = 0
+# # $i = 0
 
-$prop = 'BOGZ1FL404090430Q_change'
+# $prop = 'BOGZ1FL404090430Q_change'
 
 
 
@@ -209,14 +209,14 @@ function calc-days-since-larger-change ($result, $prop)
 
 # ----------------------------------------------------------------------
 
-$updated = calc-days-since-larger-change $result BOGZ1FL404090430Q
+# $updated = calc-days-since-larger-change $result BOGZ1FL404090430Q
 
 # ----------------------------------------------------------------------
 
-$result = get-fred-series 'WALCL'
-$updated = calc-days-since-larger-change $result 'WALCL'
+# $result = get-fred-series 'WALCL'
+# $updated = calc-days-since-larger-change $result 'WALCL'
 
-$updated
+# $updated
 
 # ----------------------------------------------------------------------
 
@@ -230,71 +230,227 @@ function get-and-calc-days-since-larger-change ($series)
 
 # ----------------------------------------------------------------------
 
-$table = get-and-calc-days-since-larger-change WLODLL
+# $table = get-and-calc-days-since-larger-change WLODLL
 
-$table[-1]
+# $table[-1]
+
+# ----------------------------------------------------------------------
+# H.4.1 table 5 with loans expanded from table 1
+# ----------------------------------------------------------------------
+
+function h41 ()
+{
+    $ls = @(
+        'WLFN'
+        'WLRRAL'
+        'TERMT'
+        'WLODLL'
+        'WDTGAL'
+        'WDFOL'
+        'WLODL'
+        'H41RESH4ENWW'
+        'WLDACLC'
+        'WLAD'
+        'WSHOBL'
+        'WSHONBNL'
+        'WSHONBIIL'
+        'WSHOICL'
+        'WSHOFADSL'
+        'WSHOMCB'
+        'WUPSHO'
+        'WUDSHO'
+        'WORAL'
+        'SWPT'
+        'WFCDA'
+        'WAOAL'
+        'WLCFLPCL'
+        'WLCFLSCL'
+        'WLCFLSECL'
+        'H41RESPPALDJNWW'
+        'WLCFOCEL'
+        'H41RESPPALDKNWW'
+    )
+        
+    $series_tables = @{}
+
+    foreach ($series in $ls)
+    {
+        $series_tables[$series] = get-fred-series $series
+    }
+       
+    $all_result_a = foreach ($entry in $series_tables.GetEnumerator())
+    {
+        Write-Host ('{0}' -f $entry.Name) -ForegroundColor Yellow
+        $series = $entry.Name
+        $table = $entry.Value
+    
+        $result = calc-days-since-larger-change $table $series
+    
+        $result[-1]
+    }
+    
+    $all_result_a | Select-Object DATE, prop, days | Sort-Object days | ft    
+}
+
+
+# $results_all = foreach ($series in $ls)
+# {
+#     $table = get-and-calc-days-since-larger-change $series
+
+#     $table[-1]    
+# }
+
+# $results_all | Format-Table 
+# ----------------------------------------------------------------------
+
+
+
+# ----------------------------------------------------------------------
+# H.8 not seasonally adjusted
+# 
+# https://fred.stlouisfed.org/release/tables?rid=22&eid=822963
+# ----------------------------------------------------------------------
+
+function h8-not-seasonally-adjusted () {
+
+    $ls = @(
+        'LTDACBW027NBOG'
+        'ODSACBW027NBOG'
+        'NDFACBW027NBOG'
+        'H8B3094NCBD'
+        'H8B3095NCBD'
+        'TMBACBW027NBOG'
+        'TNMACBW027NBOG'
+        'OMBACBW027NBOG'
+        'ONMACBW027NBOG'
+        'TOTCINSA'
+        'RHEACBW027NBOG'
+        'CRLACBW027NBOG'
+        'CCLACBW027NBOG'
+        'ALLACBW027NBOG'
+        'CASACBW027NBOG'
+        'LCBACBW027NBOG'
+        'CLDACBW027NBOG'
+        'SBFACBW027NBOG'
+        'SMPACBW027NBOG'
+        'SNFACBW027NBOG'
+        'AOCACBW027NBOG'
+        'CARACBW027NBOG'
+        'LNFACBW027NBOG'
+        'OLNACBW027NBOG'
+        'H8B3092NCBD'
+        'H8B3053NCBD'
+    )
+
+    $series_tables = @{}
+
+    foreach ($series in $ls)
+    {
+        $series_tables[$series] = get-fred-series $series
+    }
+       
+    $all_result_a = foreach ($entry in $series_tables.GetEnumerator())
+    {
+        Write-Host ('{0}' -f $entry.Name) -ForegroundColor Yellow
+        $series = $entry.Name
+        $table = $entry.Value
+    
+        $result = calc-days-since-larger-change $table $series
+    
+        $result[-1]
+    }
+    
+    $all_result_a | Select-Object DATE, prop, days | Sort-Object days | ft        
+}
 
 # ----------------------------------------------------------------------
 
-$items = @"
-WLFN
-WLRRAL
-TERMT
-WLODLL
-WDTGAL
-WDFOL
-WLODL
-H41RESH4ENWW
-WLDACLC
-WLAD
-WSHOBL
-WSHONBNL
-WSHONBIIL
-WSHOICL
-WSHOFADSL
-WSHOMCB
-WUPSHO
-WUDSHO
-WORAL
-SWPT
-WFCDA
-WAOAL
-WLCFLPCL
-WLCFLSCL
-WLCFLSECL
-H41RESPPALDJNWW
-WLCFOCEL
-H41RESPPALDKNWW
-"@
+# H.8 seasonally adjusted
 
-$ls = $items -split "`r`n"
+# https://fred.stlouisfed.org/release/tables?rid=22&eid=822916
 
-$results_all = foreach ($series in $ls)
-{
-    $table = get-and-calc-days-since-larger-change $series
+# https://fred.stlouisfed.org/series/TMBACBW027SBOG
+# https://fred.stlouisfed.org/series/TNMACBW027SBOG
+# https://fred.stlouisfed.org/series/OMBACBW027SBOG
+# https://fred.stlouisfed.org/series/ONMACBW027SBOG
+# https://fred.stlouisfed.org/series/TOTCI
+# https://fred.stlouisfed.org/series/RHEACBW027SBOG
+# https://fred.stlouisfed.org/series/CRLACBW027SBOG
+# https://fred.stlouisfed.org/series/CLDACBW027SBOG
+# https://fred.stlouisfed.org/series/SBFACBW027SBOG
+# https://fred.stlouisfed.org/series/SMPACBW027SBOG
+# https://fred.stlouisfed.org/series/SNFACBW027SBOG
+# https://fred.stlouisfed.org/series/CCLACBW027SBOG
+# https://fred.stlouisfed.org/series/CARACBW027SBOG
+# https://fred.stlouisfed.org/series/AOCACBW027SBOG
+# https://fred.stlouisfed.org/series/LNFACBW027SBOG
+# https://fred.stlouisfed.org/series/OLNACBW027SBOG
+# https://fred.stlouisfed.org/series/ALLACBW027SBOG
+# https://fred.stlouisfed.org/series/CASACBW027SBOG
+# https://fred.stlouisfed.org/series/H8B3092NCBA
+# https://fred.stlouisfed.org/series/LCBACBW027SBOG
+# https://fred.stlouisfed.org/series/H8B3053NCBA
+# https://fred.stlouisfed.org/series/LTDACBW027SBOG
+# https://fred.stlouisfed.org/series/ODSACBW027SBOG
+# https://fred.stlouisfed.org/series/H8B3094NCBA
+# https://fred.stlouisfed.org/series/NDFACBW027SBOG
+# https://fred.stlouisfed.org/series/H8B3095NCBA
 
-    $table[-1]    
+
+function h8-seasonally-adjusted () {
+
+    $ls = @(
+        'TMBACBW027SBOG'
+        'TNMACBW027SBOG'
+        'OMBACBW027SBOG'
+        'ONMACBW027SBOG'
+        'TOTCI'
+        'RHEACBW027SBOG'
+        'CRLACBW027SBOG'
+        'CLDACBW027SBOG'
+        'SBFACBW027SBOG'
+        'SMPACBW027SBOG'
+        'SNFACBW027SBOG'
+        'CCLACBW027SBOG'
+        'CARACBW027SBOG'
+        'AOCACBW027SBOG'
+        'LNFACBW027SBOG'
+        'OLNACBW027SBOG'
+        'ALLACBW027SBOG'
+        'CASACBW027SBOG'
+        'H8B3092NCBA'
+        'LCBACBW027SBOG'
+        'H8B3053NCBA'
+        'LTDACBW027SBOG'
+        'ODSACBW027SBOG'
+        'H8B3094NCBA'
+        'NDFACBW027SBOG'
+        'H8B3095NCBA'
+    )
+        
+    $series_tables = @{}
+
+    foreach ($series in $ls)
+    {
+        $series_tables[$series] = get-fred-series $series
+    }
+       
+    $all_result_a = foreach ($entry in $series_tables.GetEnumerator())
+    {
+        Write-Host ('{0}' -f $entry.Name) -ForegroundColor Yellow
+        $series = $entry.Name
+        $table = $entry.Value
+    
+        $result = calc-days-since-larger-change $table $series
+    
+        $result[-1]
+    }
+    
+    $all_result_a | Select-Object DATE, prop, days | Sort-Object days | ft        
 }
 
-$results_all | Format-Table 
+exit
 # ----------------------------------------------------------------------
-
-$series_tables = @{}
-
-foreach ($series in $ls)
-{
-    $series_tables[$series] = get-fred-series $series
-}
-
-
-$all_result_a = foreach ($entry in $series_tables.GetEnumerator())
-{
-    $series = $entry.Name
-    $table = $entry.Value
-
-    $result = calc-days-since-larger-change $table $series
-
-    $result[-1]
-}
-
-$all_result_a | Select-Object DATE, prop, days | Sort-Object days | ft
+h41
+h8-not-seasonally-adjusted
+h8-seasonally-adjusted
